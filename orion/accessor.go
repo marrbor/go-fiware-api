@@ -5,14 +5,9 @@ import (
 	"net/http"
 	"net/url"
 	"path"
-	"regexp"
 
+	"github.com/marrbor/go-fiware-api/common"
 	"github.com/marrbor/gohttp"
-)
-
-const (
-	ServiceHeader     = "fiware-service"
-	ServicePathHeader = "fiware-servicepath"
 )
 
 type (
@@ -38,22 +33,7 @@ type (
 
 var (
 	IllegalEndPointIDError = fmt.Errorf("illegal end point ID")
-	InvalidServiceName     = fmt.Errorf("invalid service name")
-	InvalidServicePath     = fmt.Errorf("invalid service path")
-
-	ReServiceHeader = regexp.MustCompile(`^[_a-z0-9]{1,50}$`)
-	ReServicePath   = regexp.MustCompile(`^/$|^/[_a-z0-9]{1,50}(/([_a-z0-9]{1,50})){0,9}$`) // max 10 path depth.
 )
-
-// IsValidService returns whether given strings suit to fiware-service or not.
-func IsValidService(s string) bool {
-	return ReServiceHeader.MatchString(s)
-}
-
-// IsValidServicePath returns whether given strings suit to fiware-service or not.
-func IsValidServicePath(s string) bool {
-	return ReServicePath.MatchString(s)
-}
 
 // NewAccessor returns Producer instance.
 func NewAccessor(baseUrl string) *Accessor {
@@ -66,23 +46,6 @@ func NewAccessor(baseUrl string) *Accessor {
 	// try to get EntryPoints. Ignore error since take it later when failed here.
 	a.EntryPoints, _ = a.GetEntryPoints()
 	return &a
-}
-
-// addServiceHeader(req, service, servicePath)
-func addServiceHeader(req *http.Request, service, servicePath string) error {
-	if 0 < len(service) {
-		if !IsValidService(service) {
-			return InvalidServiceName
-		}
-		req.Header.Add(ServiceHeader, service)
-	}
-	if 0 < len(servicePath) {
-		if !IsValidServicePath(servicePath) {
-			return InvalidServicePath
-		}
-		req.Header.Add(ServicePathHeader, servicePath)
-	}
-	return nil
 }
 
 // genBaseURL returns strings url instance included entry point.
@@ -137,7 +100,7 @@ func (a *Accessor) access(ap *AccessParameter) error {
 	if err != nil {
 		return err
 	}
-	if err := addServiceHeader(req, ap.Service, ap.ServicePath); err != nil {
+	if err := common.AddServiceHeader(req, ap.Service, ap.ServicePath); err != nil {
 		return err
 	}
 

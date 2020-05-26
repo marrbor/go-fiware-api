@@ -1,11 +1,5 @@
-/*
- * Copyright (c) 2020 Genetec corporation
- * -*- coding:utf-8 -*-
- *
- * orion server for testing.
- *
- */
-package orion
+// orion server for testing.
+package test
 
 import (
 	"fmt"
@@ -14,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/marrbor/go-fiware-api/orion"
 	"github.com/mattn/go-pipeline"
 )
 
@@ -55,7 +50,7 @@ func StartTestServer(t *testing.T) error {
 
 	// waiting for server has been activated for X seconds.
 	baseURL := fmt.Sprintf("http://%s:%d", Host, Port)
-	a := NewAccessor(baseURL)
+	a := orion.NewAccessor(baseURL)
 	for i := 0; i < DefaultWaitForServerStartup; i++ {
 		v, err := a.GetVersion()
 		if err == nil && v != nil {
