@@ -5,64 +5,69 @@ package orion
 
 import (
 	"fmt"
+	"path"
 	"time"
 
 	"github.com/marrbor/gohttp"
 )
 
 type SubscriptionSubjectCondition struct {
-	Attrs      []string `json:"attrs,omitempty"`
-	Expression string   `json:"expression,omitempty"`
+	Attrs      *[]string `json:"attrs,omitempty"`
+	Expression *string   `json:"expression,omitempty"`
 }
 
 type SubscriptionSubject struct {
-	Entities  []map[string]string          `json:"entities"`
-	Condition SubscriptionSubjectCondition `json:"condition,omitempty"`
+	Entities  []map[string]string           `json:"entities"`
+	Condition *SubscriptionSubjectCondition `json:"condition,omitempty"`
 }
-
 
 type SubscriptionHttpCustom struct {
-	Url     string              `json:"url"`
-	Headers []map[string]string `json:"headers,omitempty"`
-	Qs      []map[string]string `json:"qs,omitempty"`
-	Method  string              `json:"method,omitempty"`
-	Payload string              `json:"payload,omitempty"`
+	Url     string               `json:"url"`
+	Headers *[]map[string]string `json:"headers,omitempty"`
+	Qs      *[]map[string]string `json:"qs,omitempty"`
+	Method  *string              `json:"method,omitempty"`
+	Payload *string              `json:"payload,omitempty"`
 }
 
-// TODO. add optional attributes `attrsFormat` and `metadata`
+// TODO. add optional attributes `attrsFormat`
 type SubscriptionNotification struct {
-	Attrs            []string               `json:"attrs,omitempty"`
-	ExceptAttrs      []string               `json:"exceptAttrs,omitempty"`
-	Http             Http                   `json:"http,omitempty"`
-	HttpCustom       SubscriptionHttpCustom `json:"httpCustom,omitempty"`
-	TimesSent        int64                  `json:"timesSent,omitempty"`        // not editable, only present in GET operations
-	LastNotification time.Time              `json:"lastNotification,omitempty"` // not editable, only present in GET operations
-	LastFailure      time.Time              `json:"lastFailure,omitempty"`      // not editable, only present in GET operations
-	LastSuccess      time.Time              `json:"lastSuccess,omitempty"`      // not editable, only present in GET operations
+	Attrs            *[]string               `json:"attrs,omitempty"`
+	MetaData         *[]string               `json:"metadata,omitempty"`
+	ExceptAttrs      *[]string               `json:"exceptAttrs,omitempty"`
+	Http             *Http                   `json:"http,omitempty"`
+	HttpCustom       *SubscriptionHttpCustom `json:"httpCustom,omitempty"`
+	TimesSent        *int64                  `json:"timesSent,omitempty"`        // not editable, only present in GET operations
+	LastNotification *time.Time              `json:"lastNotification,omitempty"` // not editable, only present in GET operations
+	LastFailure      *time.Time              `json:"lastFailure,omitempty"`      // not editable, only present in GET operations
+	LastSuccess      *time.Time              `json:"lastSuccess,omitempty"`      // not editable, only present in GET operations
 }
 
 type Subscription struct {
-	Id           string                   `json:"id,omitempty"`
-	Description  string                   `json:"description,omitempty"`
+	Id           *string                  `json:"id,omitempty"`
+	Description  *string                  `json:"description,omitempty"`
 	Subject      SubscriptionSubject      `json:"subject"`
 	Notification SubscriptionNotification `json:"notification"`
-	Expires      time.Time                `json:"expires,omitempty"`
-	Status       string                   `json:"status,omitempty"`
-	Throttling   int64                    `json:"throttling,omitempty"`
+	Expires      *time.Time               `json:"expires,omitempty"`
+	Status       *string                  `json:"status,omitempty"`
+	Throttling   *int64                   `json:"throttling,omitempty"`
 }
 
-// CreateSubscription
-func (a Accessor) CreateSubscription(service, servicePath string, q *Query, subscription interface{}) error {
-	return a.access(&AccessParameter{
-		EpID:         EntryPointIDs.Subscriptions,
-		Method:       gohttp.HttpMethods.POST,
-		Service:      service,
-		ServicePath:  servicePath,
-		Path:         "",
-		Query:        q,
-		BodyToSend:   subscription,
-		ReceivedBody: nil,
-	})
+// CreateSubscription post request to create subscription and return subscription ID or error.
+func (a Accessor) CreateSubscription(service, servicePath string, subscription *Subscription) (string, error) {
+	ap := AccessParameter{
+		EpID:        EntryPointIDs.Subscriptions,
+		Method:      gohttp.HttpMethods.POST,
+		Service:     service,
+		ServicePath: servicePath,
+		Path:        "",
+		BodyToSend:  subscription,
+	}
+
+	err := a.access(&ap)
+	if err != nil {
+		return "", err
+	}
+	return path.Base(ap.ReceivedHeader.Get("Location")), err
 }
 
 // GetSubscriptionList

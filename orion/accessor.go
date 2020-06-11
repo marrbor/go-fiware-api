@@ -20,14 +20,15 @@ type (
 
 	// Access Parameter holds parameter for Orion server access.
 	AccessParameter struct {
-		EpID         EntryPointID
-		Method       gohttp.HTTPMethod
-		Service      string
-		ServicePath  string
-		Path         string
-		Query        *Query
-		BodyToSend   interface{}
-		ReceivedBody interface{}
+		EpID           EntryPointID
+		Method         gohttp.HTTPMethod
+		Service        string
+		ServicePath    string
+		Path           string
+		Query          *Query
+		BodyToSend     interface{}
+		ReceivedBody   interface{}
+		ReceivedHeader http.Header
 	}
 )
 
@@ -113,6 +114,10 @@ func (a *Accessor) access(ap *AccessParameter) error {
 		return fmt.Errorf(res.Status)
 	}
 
+	// set response header to return.
+	ap.ReceivedHeader = res.Header
+
+	// has response body?
 	if ap.ReceivedBody == nil {
 		return nil
 	}
