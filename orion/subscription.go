@@ -70,30 +70,26 @@ func (a Accessor) CreateSubscription(service, servicePath string, subscription *
 	return path.Base(ap.ReceivedHeader.Get("Location")), err
 }
 
-// GetSubscriptionList
-func (a Accessor) GetSubscriptionList(service, servicePath string, q *Query, subscriptions interface{}) error {
+// GetSubscriptionList gets current subscription list
+func (a Accessor) GetSubscriptionList(service, servicePath string, subscriptions *[]Subscription) error {
 	return a.access(&AccessParameter{
 		EpID:         EntryPointIDs.Subscriptions,
 		Method:       gohttp.HttpMethods.GET,
 		Service:      service,
 		ServicePath:  servicePath,
 		Path:         "",
-		Query:        q,
-		BodyToSend:   nil,
 		ReceivedBody: subscriptions,
 	})
 }
 
 // GetSubscription gets subscription that has specified ID.
-func (a *Accessor) GetSubscription(service, servicePath, id string, q *Query, subscription interface{}) error {
+func (a *Accessor) GetSubscription(service, servicePath, id string, subscription *Subscription) error {
 	return a.access(&AccessParameter{
 		EpID:         EntryPointIDs.Entities,
 		Method:       gohttp.HttpMethods.GET,
 		Service:      service,
 		ServicePath:  servicePath,
 		Path:         fmt.Sprintf("/%s", id),
-		Query:        q,
-		BodyToSend:   nil,
 		ReceivedBody: subscription,
 	})
 }
