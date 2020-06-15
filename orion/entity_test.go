@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/marrbor/go-fiware-datamodel/datamodel"
-	"github.com/marrbor/go-orion-api/orionapi"
+	"github.com/marrbor/go-fiware-api/datamodel"
+	"github.com/marrbor/go-fiware-api/orion"
 	"github.com/marrbor/goutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -50,9 +50,7 @@ type (
 )
 
 func TestAccessor_CRUDEntity(t *testing.T) {
-	err := orionapi.StartTestServer(t)
-	assert.NoError(t, err)
-	a := orionapi.NewAccessor(fmt.Sprintf("http://%s:%d", orionapi.Host, orionapi.Port))
+	a := orion.NewAccessor(fmt.Sprintf("http://%s:%d", "localhost", 1066))
 
 	// normalized request
 	n := CookBookNormalized{
@@ -74,7 +72,7 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 			Value: 4,
 		},
 	}
-	err = a.CreateEntity("", "", nil, &n)
+	err := a.CreateEntity("", "", nil, &n)
 	assert.NoError(t, err)
 
 	// keyvalue request
@@ -87,7 +85,7 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 		ReviewRating: 8,
 	}
 
-	op := orionapi.NewKeyValuesQuery()
+	op := orion.NewKeyValuesQuery()
 	err = a.CreateEntity("", "", op, &kv)
 	assert.NoError(t, err)
 
@@ -102,7 +100,7 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 
 	// GetEntityList with keyValue
 	var ck = make([]CookBookKeyValue, 0)
-	op = orionapi.NewKeyValuesQuery()
+	op = orion.NewKeyValuesQuery()
 	err = a.GetEntityList("", "", op, &ck)
 	assert.NoError(t, err)
 	assert.EqualValues(t, 2, len(ck))
@@ -112,7 +110,7 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 
 	// GetEntityList with Query
 	ck = make([]CookBookKeyValue, 0)
-	op = orionapi.NewKeyValuesQuery()
+	op = orion.NewKeyValuesQuery()
 	err = op.SetIDQuery([]string{"review-Elizalde-34"})
 	assert.NoError(t, err)
 	err = a.GetEntityList("", "", op, &ck)
@@ -121,7 +119,7 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 
 	//
 	ck = make([]CookBookKeyValue, 0)
-	op = orionapi.NewKeyValuesQuery()
+	op = orion.NewKeyValuesQuery()
 	err = op.SetTypeQuery([]string{"Review", "Person"})
 	assert.NoError(t, err)
 	err = a.GetEntityList("", "", op, &ck)
@@ -130,7 +128,7 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 
 	//
 	ck = make([]CookBookKeyValue, 0)
-	op = orionapi.NewKeyValuesQuery()
+	op = orion.NewKeyValuesQuery()
 	err = op.SetIDPatternQuery(`review-Elizalde-[0-9]+$`)
 	assert.NoError(t, err)
 	err = a.GetEntityList("", "", op, &ck)
@@ -139,7 +137,7 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 
 	//
 	ck = make([]CookBookKeyValue, 0)
-	op = orionapi.NewKeyValuesQuery()
+	op = orion.NewKeyValuesQuery()
 	err = op.SetTypePatternQuery(`^R.+$`)
 	assert.NoError(t, err)
 	err = a.GetEntityList("", "", op, &ck)
@@ -148,15 +146,15 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 
 	//
 	ck = make([]CookBookKeyValue, 0)
-	op = orionapi.NewKeyValuesQuery().SetQQuery([]string{"reviewRating>=7"})
+	op = orion.NewKeyValuesQuery().SetQQuery([]string{"reviewRating>=7"})
 	err = a.GetEntityList("", "", op, &ck)
 	assert.NoError(t, err)
 	assert.EqualValues(t, 1, len(ck))
 	/*
 		// TODO Metadata Query test is not success (400 Bad Request)
 		ck = make([]CookBookKeyValue, 0)
-		op = orionapi.NewQuery().SetMQQuery([]string{"itemReviewed.type=Restaurant"})
-		err = op.SetOptions([]orionapi.Option{orionapi.QueryOptions.KeyValues})
+		op = orion.NewQuery().SetMQQuery([]string{"itemReviewed.type=Restaurant"})
+		err = op.SetOptions([]orion.Option{orion.QueryOptions.KeyValues})
 		assert.NoError(t, err)
 		err = a.GetEntityList("", "", op, &ck)
 		assert.NoError(t, err)
@@ -164,21 +162,21 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 	*/
 	//
 	ck = make([]CookBookKeyValue, 0)
-	op = orionapi.NewKeyValuesQuery().SetLimit(1)
+	op = orion.NewKeyValuesQuery().SetLimit(1)
 	err = a.GetEntityList("", "", op, &ck)
 	assert.NoError(t, err)
 	assert.EqualValues(t, 1, len(ck))
 
 	//
 	ck = make([]CookBookKeyValue, 0)
-	op = orionapi.NewKeyValuesQuery().SetOffset(1).SetAttrs([]string{"type", "id", "reviewRating"})
+	op = orion.NewKeyValuesQuery().SetOffset(1).SetAttrs([]string{"type", "id", "reviewRating"})
 	err = a.GetEntityList("", "", op, &ck)
 	assert.NoError(t, err)
 	assert.EqualValues(t, 1, len(ck))
 
 	//
 	ck = make([]CookBookKeyValue, 0)
-	op = orionapi.NewKeyValuesQuery().SetOrderBy([]string{"reviewRating"}).SetAttrs([]string{"type", "id", "reviewRating"})
+	op = orion.NewKeyValuesQuery().SetOrderBy([]string{"reviewRating"}).SetAttrs([]string{"type", "id", "reviewRating"})
 	err = a.GetEntityList("", "", op, &ck)
 	assert.NoError(t, err)
 	assert.EqualValues(t, 2, len(ck))
@@ -232,39 +230,33 @@ func TestAccessor_CRUDEntity(t *testing.T) {
 	err = a.GetEntityList("", "", nil, &c)
 	assert.NoError(t, err)
 	assert.EqualValues(t, 0, len(c))
-
-	// stop server
-	err = orionapi.StopTestServer(t)
-	assert.NoError(t, err)
-	return
-
 }
 
 func TestErrorQuery(t *testing.T) {
-	op := orionapi.NewQuery()
+	op := orion.NewQuery()
 	err := op.SetTypeQuery([]string{"Review", "Person"})
 	assert.NoError(t, err)
 	err = op.SetTypePatternQuery(`^R.+$`)
-	assert.Error(t, err, orionapi.IncompatibleQueryError.Error())
+	assert.Error(t, err, orion.IncompatibleQueryError.Error())
 	err = op.SetIDQuery([]string{"Review", "Person"})
 	assert.NoError(t, err)
 	err = op.SetIDPatternQuery(`^i.+_.+$`)
-	assert.Error(t, err, orionapi.IncompatibleQueryError.Error())
+	assert.Error(t, err, orion.IncompatibleQueryError.Error())
 	l := datamodel.LatLng{
 		Latitude:  -100,
 		Longitude: 0,
 	}
 	err = op.SetCoordsQuery(&[]datamodel.LatLng{l})
-	assert.Error(t, err, orionapi.InvalidLatLngError)
+	assert.Error(t, err, orion.InvalidLatLngError)
 
-	op2 := orionapi.NewQuery()
+	op2 := orion.NewQuery()
 	err = op2.SetTypePatternQuery(`^R.+$`)
 	assert.NoError(t, err)
 	err = op2.SetIDPatternQuery(`^i.+_.+$`)
 	assert.NoError(t, err)
 
 	err = op2.SetTypeQuery([]string{"Review", "Person"})
-	assert.Error(t, err, orionapi.IncompatibleQueryError.Error())
+	assert.Error(t, err, orion.IncompatibleQueryError.Error())
 	err = op2.SetIDQuery([]string{"Review", "Person"})
-	assert.Error(t, err, orionapi.IncompatibleQueryError.Error())
+	assert.Error(t, err, orion.IncompatibleQueryError.Error())
 }

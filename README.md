@@ -49,5 +49,10 @@ If you are similar to Japanese, following Japanese documents are also available:
 
 Have to install [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/) set them to PATH environment variable before run the testing.
 
+## datamodel
+
+FIWARE datamodel definition written by [Go](https://golang.org/).
+
+
 # LICENSE
 MIT

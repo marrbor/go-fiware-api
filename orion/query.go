@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/marrbor/go-fiware-datamodel/datamodel"
+	"github.com/marrbor/go-fiware-api/datamodel"
 	"github.com/marrbor/goutil"
 )
 
