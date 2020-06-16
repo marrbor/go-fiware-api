@@ -8,6 +8,7 @@ import (
 
 	"github.com/marrbor/go-fiware-api/common"
 	"github.com/marrbor/gohttp"
+	"github.com/marrbor/golog"
 )
 
 type (
@@ -104,6 +105,8 @@ func (a *Accessor) access(ap *AccessParameter) error {
 	if err := common.AddServiceHeader(req, ap.Service, ap.ServicePath); err != nil {
 		return err
 	}
+
+	golog.Trace(fmt.Sprintf("url: %s\nbody:%+v", req.URL, req.Body))
 
 	// Send request
 	res, err := a.HttpClient.Do(req)
