@@ -85,7 +85,7 @@ func (a Accessor) GetSubscriptionList(service, servicePath string, subscriptions
 // GetSubscription gets subscription that has specified ID.
 func (a *Accessor) GetSubscription(service, servicePath, id string, subscription *Subscription) error {
 	return a.access(&AccessParameter{
-		EpID:         EntryPointIDs.Entities,
+		EpID:         EntryPointIDs.Subscriptions,
 		Method:       gohttp.HttpMethods.GET,
 		Service:      service,
 		ServicePath:  servicePath,
@@ -97,7 +97,7 @@ func (a *Accessor) GetSubscription(service, servicePath, id string, subscription
 // GetSubscriptionAttribute gets specified attribute of specified subscription.
 func (a *Accessor) GetSubscriptionAttribute(service, servicePath, id, attrName string, q *Query, attr interface{}) error {
 	return a.access(&AccessParameter{
-		EpID:         EntryPointIDs.Entities,
+		EpID:         EntryPointIDs.Subscriptions,
 		Method:       gohttp.HttpMethods.GET,
 		Service:      service,
 		ServicePath:  servicePath,
@@ -113,7 +113,7 @@ func (a *Accessor) GetSubscriptionAttribute(service, servicePath, id, attrName s
 // UpdateSubscription updates subscription
 func (a *Accessor) UpdateSubscription(service, servicePath, id, typeName string, param interface{}) error {
 	return a.access(&AccessParameter{
-		EpID:         EntryPointIDs.Entities,
+		EpID:         EntryPointIDs.Subscriptions,
 		Method:       gohttp.HttpMethods.PATCH,
 		Service:      service,
 		ServicePath:  servicePath,
@@ -127,7 +127,7 @@ func (a *Accessor) UpdateSubscription(service, servicePath, id, typeName string,
 // UpdateSubscriptionAttribute updates or append subscription attribute.
 func (a *Accessor) UpdateSubscriptionAttribute(service, servicePath, id, attrName string, q *Query, attr interface{}) error {
 	return a.access(&AccessParameter{
-		EpID:         EntryPointIDs.Entities,
+		EpID:         EntryPointIDs.Subscriptions,
 		Method:       gohttp.HttpMethods.POST,
 		Service:      service,
 		ServicePath:  servicePath,
@@ -141,7 +141,7 @@ func (a *Accessor) UpdateSubscriptionAttribute(service, servicePath, id, attrNam
 /// Delete
 func (a *Accessor) DeleteSubscription(service, servicePath, id, typeName string) error {
 	return a.access(&AccessParameter{
-		EpID:         EntryPointIDs.Entities,
+		EpID:         EntryPointIDs.Subscriptions,
 		Method:       gohttp.HttpMethods.DELETE,
 		Service:      service,
 		ServicePath:  servicePath,
