@@ -4,7 +4,7 @@ package ngsi
 // Data Type
 // https://quantumleap.readthedocs.io/en/latest/user/
 const (
-	NgsiArray       = "Array"
+	Array           = "Array"
 	Boolean         = "Boolean"
 	DateTime        = "DateTime"
 	Integer         = "Integer"
